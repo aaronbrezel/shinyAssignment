@@ -41,8 +41,8 @@ ui <- fluidPage(
     mainPanel(
       
       tableOutput("view"),
-      plotOutput(outputId = "resultPlot", click = "plot_click")
-      
+      plotOutput(outputId = "resultPlot", click = "plot_click"),
+      verbatimTextOutput("info") 
     )
     
   )
@@ -77,40 +77,13 @@ server <- function(input, output) {
     else{
       ggplot(test, aes(x = test$year, y = test$value, colour = test$variable)) + geom_line() + xlim(input$range[1], input$range[2]) + ylim(40,65) + xlab("year") + ylab("Percentage share of vote") + ggtitle("Election results by year")  
     }
-    
+  })
+  
+  output$info <- renderText({
+    paste0("year=", input$plot_click$x, "\nVote Share=", input$plot_click$y)
   })
   
 }
 
 # Create Shiny app ----
 shinyApp(ui, server)
-str(presidentialForecast)
-
-#I want to be able to insert this blank plot into the problem set. But for some reason it isn;t working
-ggplot(presidentialForecast, aes(x= presidentialForecast$year, y= presidentialForecast$Actual)) + geom_line(aes(x = presidentialForecast$year, y= presidentialForecast$Fair)) + xlim(1952, 2008) + ylim(0,70)
-presidentialForecast$test
-
-?geom_line
-
-a = 1 
-b = 2 
-c = parse(text = "log(a + b)") 
-c
-?paste
-eval(c) 
-?geom_line
-colnam
-
-
-test <- melt(presidentialForecast, year = c("campbell", "Lewis-Beck", "EWT2C2", "Fair", "Hibbs", "Abramowitz", "Actual"))
-meltYear <- rownames(presidentialForecast)
-meltYear <- as.numeric(meltYear)
-test$year <- meltYear
-test <- test[!grepl("year",test$variable),]
-ggplot(test, aes(x = test$year, y = test$value, colour = test$variable)) + geom_line()
-
-ChickWeight
-
-colnames(test)
-test
-ggplot(presidentialForecast, aes(x = presidentialForecast$year, y =))

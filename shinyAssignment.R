@@ -64,19 +64,18 @@ server <- function(input, output) {
   })
   output$resultPlot <- renderPlot({
     test <- presidentialForecast[which(presidentialForecast$year >= input$range[1] & presidentialForecast$year <= input$range[2]),c(input$forecaster, "year")]
+    test <- melt(test, year = c("campbell", "Lewis-Beck", "EWT2C2", "Fair", "Hibbs", "Abramowitz", "Actual"))
+    meltYear <- rownames(presidentialForecast)
+    meltYear <- as.numeric(meltYear)
+    test$year <- meltYear
+    test <- test[!grepl("year",test$variable),]
+    
     if(ncol(test) == 1){
-      ggplot(presidentialForecast, aes(x= presidentialForecast$year, y= presidentialForecast$Actual)) + xlim(input$range[1], input$range[2]) + ylim(0,70)
+      ggplot(presidentialForecast, aes(x= presidentialForecast$year, y= presidentialForecast$Actual)) + xlim(input$range[1], input$range[2]) + ylim(40,65)
     }
     
-    #plotVector <- c("ggplot(data = test, aes(x = test$year, y = test[1]))")
-    #for(i in 2:ncol(test)-1){
-    #  plotVector <- c(plotVector, "+ goem_line( ")
-    #}
-    #plotVector <- c(plotVector, '+ xlab("year") + ylab("Percentage share of vote") + ggtitle("Election results by year")')
-    #temp = parse(text = paste(plotVector, sep = " "))
-    #eval(temp)
     else{
-      ggplot(data = test, aes(x = test$year, y = test$Actual)) + geom_line() + xlab("year") + ylab("Percentage share of vote") + ggtitle("Election results by year")  
+      ggplot(test, aes(x = test$year, y = test$value, colour = test$variable)) + geom_line() + xlim(input$range[1], input$range[2]) + ylim(40,65) + xlab("year") + ylab("Percentage share of vote") + ggtitle("Election results by year")  
     }
     
   })

@@ -1,3 +1,4 @@
+#install.packages("reshape")
 library(shiny)
 library(EBMAforecast)
 library(ggplot2)
@@ -52,7 +53,8 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   library(EBMAforecast)
- data("presidentialForecast")
+  data("presidentialForecast")
+  library(reshape)
   presidentialForecast$year <- rownames(presidentialForecast)
   presidentialForecast$year <- as.numeric(presidentialForecast$year)
 
@@ -73,7 +75,10 @@ server <- function(input, output) {
     #plotVector <- c(plotVector, '+ xlab("year") + ylab("Percentage share of vote") + ggtitle("Election results by year")')
     #temp = parse(text = paste(plotVector, sep = " "))
     #eval(temp)
-    ggplot(data = test, aes(x = test$year, y = test$Actual)) + geom_line() + geom_point() + xlab("year") + ylab("Percentage share of vote") + ggtitle("Election results by year")  
+    else{
+      ggplot(data = test, aes(x = test$year, y = test$Actual)) + geom_line() + xlab("year") + ylab("Percentage share of vote") + ggtitle("Election results by year")  
+    }
+    
   })
   
 }
@@ -83,8 +88,10 @@ shinyApp(ui, server)
 str(presidentialForecast)
 
 #I want to be able to insert this blank plot into the problem set. But for some reason it isn;t working
-ggplot(presidentialForecast, aes(x= presidentialForecast$year, y= presidentialForecast$Actual)) + xlim(1952, 2008) + ylim(0,70)
+ggplot(presidentialForecast, aes(x= presidentialForecast$year, y= presidentialForecast$Actual)) + geom_line(aes(x = presidentialForecast$year, y= presidentialForecast$Fair)) + xlim(1952, 2008) + ylim(0,70)
 presidentialForecast$test
+
+?geom_line
 
 a = 1 
 b = 2 
@@ -95,5 +102,16 @@ eval(c)
 ?geom_line
 colnam
 
-presidentialForecast[ -c(3)]
-presidentialForecast
+
+test <- melt(presidentialForecast, year = c("campbell", "Lewis-Beck", "EWT2C2", "Fair", "Hibbs", "Abramowitz", "Actual"))
+meltYear <- rownames(presidentialForecast)
+meltYear <- as.numeric(meltYear)
+test$year <- meltYear
+test <- test[!grepl("year",test$variable),]
+ggplot(test, aes(x = test$year, y = test$value, colour = test$variable)) + geom_line()
+
+ChickWeight
+
+colnames(test)
+test
+ggplot(presidentialForecast, aes(x = presidentialForecast$year, y =))

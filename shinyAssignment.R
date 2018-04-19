@@ -71,7 +71,7 @@ server <- function(input, output) {
     #test$year <- meltYear
     #test <- test[!grepl("year",test$variable),]
     test <- melt(test, id.vars = "year") #reorganizes the dataframe
-    test <- test[test$variable %in% c(input$forecaster, "Actual")]
+    test <- test[test$variable %in% c(input$forecaster, "Actual"),]
     
     if(ncol(test) == 1){
       ggplot(presidentialForecast, aes(x= presidentialForecast$year, y= presidentialForecast$Actual)) + xlim(input$range[1], input$range[2]) + ylim(40,65)

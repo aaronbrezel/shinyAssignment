@@ -58,17 +58,20 @@ server <- function(input, output) {
   presidentialForecast$year <- rownames(presidentialForecast)
   presidentialForecast$year <- as.numeric(presidentialForecast$year)
 
-  
+  #renders the table
   output$view <- renderTable({
     presidentialForecast[which(presidentialForecast$year >= input$range[1] & presidentialForecast$year <= input$range[2]),c(input$forecaster, "year")]
   })
+  #renders the plot
   output$resultPlot <- renderPlot({
-    test <- presidentialForecast[which(presidentialForecast$year >= input$range[1] & presidentialForecast$year <= input$range[2]),c(input$forecaster, "year")]
-    test <- melt(test, year = c("campbell", "Lewis-Beck", "EWT2C2", "Fair", "Hibbs", "Abramowitz", "Actual"))
-    meltYear <- rownames(presidentialForecast)
-    meltYear <- as.numeric(meltYear)
-    test$year <- meltYear
-    test <- test[!grepl("year",test$variable),]
+    test <- presidentialForecast[which(presidentialForecast$year >= input$range[1] & presidentialForecast$year <= input$range[2]),c(input$forecaster, "year")] #limits the dataset to just what's decided in the plot
+    #test <- melt(test, year = c("campbell", "Lewis-Beck", "EWT2C2", "Fair", "Hibbs", "Abramowitz", "Actual"))
+    #meltYear <- rownames(presidentialForecast)
+    #meltYear <- as.numeric(meltYear)
+    #test$year <- meltYear
+    #test <- test[!grepl("year",test$variable),]
+    test <- melt(test, id.vars = "year") #reorganizes the dataframe
+    test <- test[test$variable %in% c(input$forecaster, "Actual")]
     
     if(ncol(test) == 1){
       ggplot(presidentialForecast, aes(x= presidentialForecast$year, y= presidentialForecast$Actual)) + xlim(input$range[1], input$range[2]) + ylim(40,65)
@@ -79,6 +82,7 @@ server <- function(input, output) {
     }
   })
   
+  #so that you can click on the graph and be told your coordinates
   output$info <- renderText({
     paste0("year=", input$plot_click$x, "\nVote Share=", input$plot_click$y)
   })
@@ -87,3 +91,5 @@ server <- function(input, output) {
 
 # Create Shiny app ----
 shinyApp(ui, server)
+
+
